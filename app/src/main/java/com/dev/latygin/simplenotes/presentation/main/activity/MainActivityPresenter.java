@@ -1,4 +1,4 @@
-package com.dev.latygin.simplenotes.presentation.main;
+package com.dev.latygin.simplenotes.presentation.main.activity;
 
 import android.support.design.widget.NavigationView;
 import android.view.MenuItem;
@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.dev.latygin.simplenotes.R;
+import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
 
 @InjectViewState
 public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
@@ -22,6 +23,7 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
     private void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.notes_item:
+                getViewState().replaceFragment(EditNoteFragment.newInstance());
                 break;
             case R.id.settings_item:
                 break;

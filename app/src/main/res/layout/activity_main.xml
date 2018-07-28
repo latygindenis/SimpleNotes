@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.main.MainActivity"
+    tools:context=".presentation.main.activity.MainActivity"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
@@ -25,7 +25,8 @@
         <FrameLayout
             android:id="@+id/main_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            />
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

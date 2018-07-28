@@ -1,12 +1,11 @@
-package com.dev.latygin.simplenotes.presentation.main;
+package com.dev.latygin.simplenotes.presentation.main.activity;
 
+import android.support.v4.app.Fragment;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -33,7 +32,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
     }
     
 
-
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
     
@@ -42,7 +40,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
-
 
 
     @Override
@@ -55,6 +52,8 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
     }
+
+
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
@@ -83,6 +82,11 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
     }
 
     @Override
+    public void replaceFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
@@ -93,4 +97,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
+
 }
