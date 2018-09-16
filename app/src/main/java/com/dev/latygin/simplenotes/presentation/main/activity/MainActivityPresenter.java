@@ -7,6 +7,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
+import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesFragment;
 
 @InjectViewState
 public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
@@ -26,6 +27,7 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
                 getViewState().replaceFragment(EditNoteFragment.newInstance());
                 break;
             case R.id.settings_item:
+                getViewState().replaceFragment(ListOfNotesFragment.newInstance());
                 break;
             default:
         }

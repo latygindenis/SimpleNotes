@@ -6,7 +6,7 @@ import android.widget.EditText;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.dev.latygin.simplenotes.data.models.Note;
+import com.dev.latygin.simplenotes.data.room.Note;
 
 
 @InjectViewState

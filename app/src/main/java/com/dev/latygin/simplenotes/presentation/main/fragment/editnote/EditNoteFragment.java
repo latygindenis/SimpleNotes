@@ -12,7 +12,7 @@ import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.dev.latygin.simplenotes.R;
-import com.dev.latygin.simplenotes.data.models.Note;
+import com.dev.latygin.simplenotes.data.room.Note;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,9 +53,4 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
 
     }
 
-    @Override
-    public void updateNote(Note note) {
-        titleEditText.setText(note.getTitle());
-        contentEditText.setText(note.getContent());
-    }
 }
