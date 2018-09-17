@@ -6,47 +6,26 @@ import android.widget.EditText;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.data.room.Note;
 
 
 @InjectViewState
 public class EditNotePresenter extends MvpPresenter<EditNoteView> {
-    Note note = new Note();
 
-    public void setupEditNote(EditText title, EditText content){
-        title.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                note.setTitle(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        content.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                note.setContent(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+    public void updateNoteTitle(Note note, CharSequence charSequence) {
+        note.setTitle(String.valueOf(charSequence));
     }
 
+    public void updateNoteContent(Note note, CharSequence charSequence) {
+        note.setContent(String.valueOf(charSequence));
+    }
+
+    public void updateNote(Note note) {
+        App.getInstance().getNoteDatabase().noteDao().updateNote(note);
+    }
+
+    public void createNote(Note note) {
+        App.getInstance().getNoteDatabase().noteDao().createNote(note);
+    }
 }

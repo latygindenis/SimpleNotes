@@ -20,7 +20,6 @@ public class App extends Application {
                 NoteDatabase.class, "database")
                 .allowMainThreadQueries()
                 .build();
-        // noteDatabase.noteDao().createNote(new Note());
 
     }
 

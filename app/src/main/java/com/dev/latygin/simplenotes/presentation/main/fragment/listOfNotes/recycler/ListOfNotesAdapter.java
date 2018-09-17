@@ -1,7 +1,7 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.recycler;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +14,20 @@ import java.util.ArrayList;
 
 public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHolder> {
 
-    private ArrayList<Note> notes = new ArrayList<>();
-    private Context context;
+    private ArrayList<Note> notes;
 
-    public ListOfNotesAdapter(ArrayList<Note> notes, Context context) {
+    public interface ClickCallback {
+        void click(int position);
+    }
+
+    ClickCallback clickCallback;
+
+    public void registerRecyclerCalback(ClickCallback clickCallback) {
+        this.clickCallback = clickCallback;
+    }
+
+    public ListOfNotesAdapter(ArrayList<Note> notes, FragmentActivity fragmentActivity) {
         this.notes = notes;
-        this.context = context;
     }
 
     @NonNull
@@ -31,12 +39,12 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
         return new ListOfNotesViewHolder(v);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull ListOfNotesViewHolder holder, int position) {
         Note note = notes.get(position);
         holder.titleNote.setText(note.title);
         holder.contentNote.setText(note.content);
+        holder.cardNote.setOnClickListener(view -> clickCallback.click(position));
     }
 
     @Override

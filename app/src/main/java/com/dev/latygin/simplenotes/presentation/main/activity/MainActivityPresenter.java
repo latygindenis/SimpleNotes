@@ -24,10 +24,10 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
     private void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.notes_item:
-                getViewState().replaceFragment(EditNoteFragment.newInstance());
+                getViewState().replaceFragment(ListOfNotesFragment.newInstance());
                 break;
             case R.id.settings_item:
-                getViewState().replaceFragment(ListOfNotesFragment.newInstance());
+                //getViewState().replaceFragment(ListOfNotesFragment.newInstance());
                 break;
             default:
         }
