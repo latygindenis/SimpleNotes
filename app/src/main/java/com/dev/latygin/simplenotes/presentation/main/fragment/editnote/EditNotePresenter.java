@@ -28,4 +28,8 @@ public class EditNotePresenter extends MvpPresenter<EditNoteView> {
     public void createNote(Note note) {
         App.getInstance().getNoteDatabase().noteDao().createNote(note);
     }
+
+    public Note getNoteByKey(long key) {
+        return App.getInstance().getNoteDatabase().noteDao().getNoteById(key);
+    }
 }

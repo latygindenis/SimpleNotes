@@ -7,5 +7,4 @@ import com.arellomobile.mvp.MvpView;
 
 public interface MainActivityView extends MvpView {
     void checkDrawerItem(MenuItem menuItem);
-    void replaceFragment(Fragment fragment);
 }

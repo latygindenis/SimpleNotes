@@ -1,14 +1,22 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.editnote;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toolbar;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -16,17 +24,19 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.data.room.Note;
+import com.dev.latygin.simplenotes.presentation.main.activity.MainActivity;
+import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteView{
+public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteView {
 
     @InjectPresenter
     EditNotePresenter presenter;
 
     @ProvidePresenter
-    public EditNotePresenter presenter(){
+    public EditNotePresenter presenter() {
         return new EditNotePresenter();
     }
 
@@ -36,21 +46,28 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     @BindView(R.id.content_edit_text)
     EditText contentEditText;
 
+
     Note note = new Note();
+
+    public static EditNoteFragment newInstance(long key) {
+        EditNoteFragment editNoteFragment = new EditNoteFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("key", key);
+        editNoteFragment.setArguments(bundle);
+        return editNoteFragment;
+    }
 
     public static EditNoteFragment newInstance() {
         return new EditNoteFragment();
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            note.id = (long) getArguments().get("key");
-            note.setContent((String) getArguments().get("content"));
-            note.setTitle((String) getArguments().get("title"));
-        }
     }
+
 
     @Nullable
     @Override
@@ -61,7 +78,15 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null) {
+            note = presenter.getNoteByKey((long) getArguments().get("key"));
+            if (note == null) {
+                note = new Note();
+            }
+            Log.i("id1", String.valueOf(note.id));
+        }
         ButterKnife.bind(this, view);
+
         titleEditText.setText(note.title);
         contentEditText.setText(note.content);
 
@@ -97,15 +122,8 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
 
             }
         });
-        setHasOptionsMenu(true);
-
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-    }
 
     @Override
     public void onStop() {
@@ -115,6 +133,43 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
         } else {
             presenter.updateNote(note);
         }
-
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.note_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, ListOfNotesFragment.newInstance()).commit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("key", note.getId());
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.i("test", "attach");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i("test", "detach");
+    }
+
 }

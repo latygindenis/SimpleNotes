@@ -1,6 +1,8 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,10 +19,12 @@ import android.view.ViewGroup;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.data.room.Note;
 import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
 import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.recycler.ListOfNotesAdapter;
+import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
 
 import java.util.ArrayList;
 
@@ -61,10 +65,7 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         fab.setOnClickListener(v -> {
-
-            EditNoteFragment fragment = EditNoteFragment.newInstance();
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, fragment).commit();
+            App.getInstance().getRouter().navigateTo(Screens.DETAIL_OF_NOTE.name());
         });
 
         RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2, 1);
@@ -76,21 +77,11 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
     @Override
     public void initAdapter(ArrayList<Note> notes) {
         recyclerView.setAdapter(new ListOfNotesAdapter(notes, getActivity()));
-
         ListOfNotesAdapter listOfNotesAdapter = (ListOfNotesAdapter) recyclerView.getAdapter();
-        listOfNotesAdapter.registerRecyclerCalback(new ListOfNotesAdapter.ClickCallback() {
-            @Override
-            public void click(int position) {
-                Note note = notes.get(position);
-                Bundle bundle = new Bundle();
-                bundle.putLong("key", note.id);
-                bundle.putString("title", note.title);
-                bundle.putString("content", note.content);
-                EditNoteFragment fragment = EditNoteFragment.newInstance();
-                fragment.setArguments(bundle);
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, fragment).commit();
-            }
+        listOfNotesAdapter.registerRecyclerCalback(position -> {
+            Note note = notes.get(position);
+            App.getInstance().getRouter().navigateTo(Screens.DETAIL_OF_NOTE.name(), note.id);
         });
     }
+
 }

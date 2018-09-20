@@ -31,4 +31,7 @@ public class Note {
         return content;
     }
 
+    public long getId() {
+        return id;
+    }
 }
