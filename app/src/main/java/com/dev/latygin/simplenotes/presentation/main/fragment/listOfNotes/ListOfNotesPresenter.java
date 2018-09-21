@@ -1,6 +1,6 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -13,10 +13,23 @@ import java.util.ArrayList;
 @InjectViewState
 public class ListOfNotesPresenter extends MvpPresenter<ListOfNotesView> {
 
+    public boolean needUpdate = true;
+    ArrayList<Boolean> isSelectedList;
+
     public void setNotesForRecycler() {
-        NoteDatabase database = App.getInstance().getNoteDatabase();
-        ArrayList<Note> notesForRecycler = (ArrayList<Note>) database.noteDao().getListOfNotes();
-        getViewState().initAdapter(notesForRecycler);
+        if (needUpdate) {
+            NoteDatabase database = App.getInstance().getNoteDatabase();
+            ArrayList<Note> notesForRecycler = (ArrayList<Note>) database.noteDao().getListOfNotes();
+            isSelectedList = new ArrayList<>();
+            for (Note note : notesForRecycler) {
+                isSelectedList.add(false);
+            }
+            Log.i("database", "yep");
+            getViewState().initAdapter(notesForRecycler);
+            needUpdate = false;
+        }
+
     }
+
 
 }

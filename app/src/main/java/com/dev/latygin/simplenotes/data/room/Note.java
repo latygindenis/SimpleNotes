@@ -9,11 +9,11 @@ import java.util.UUID;
 public class Note {
 
     @PrimaryKey(autoGenerate = true)
-    public long id;
+    private long id;
 
-    public String title;
+    private String title;
 
-    public String content;
+    private String content;
 
     public void setTitle(String title) {
         this.title = title;
@@ -33,5 +33,9 @@ public class Note {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

@@ -47,7 +47,7 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     EditText contentEditText;
 
 
-    Note note = new Note();
+    Note note;
 
     public static EditNoteFragment newInstance(long key) {
         EditNoteFragment editNoteFragment = new EditNoteFragment();
@@ -65,6 +65,8 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        setRetainInstance(true);
+
         super.onCreate(savedInstanceState);
     }
 
@@ -78,18 +80,15 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
         if (getArguments() != null) {
             note = presenter.getNoteByKey((long) getArguments().get("key"));
-            if (note == null) {
-                note = new Note();
-            }
-            Log.i("id1", String.valueOf(note.id));
+        } else {
+            note = new Note();
         }
-        ButterKnife.bind(this, view);
 
-        titleEditText.setText(note.title);
-        contentEditText.setText(note.content);
-
+        presenter.updateState(note);
         titleEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -126,9 +125,9 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
 
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if (note.id == 0) {
+    public void onDestroy() {
+        super.onDestroy();
+        if (note.getId() == 0) {
             presenter.createNote(note);
         } else {
             presenter.updateNote(note);
@@ -155,21 +154,15 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     }
 
     @Override
+    public void checkView(Note note) {
+        titleEditText.setText(note.getTitle());
+        contentEditText.setText(note.getTitle());
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong("key", note.getId());
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.i("test", "attach");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.i("test", "detach");
     }
 
 }
