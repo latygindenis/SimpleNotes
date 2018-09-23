@@ -64,10 +64,15 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
-        setRetainInstance(true);
-
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        if (savedInstanceState != null) {
+            note = presenter.getNoteByKey(savedInstanceState.getLong("key"));
+        } else {
+            note = new Note();
+            presenter.createNote(note);
+        }
+
     }
 
 
@@ -80,64 +85,26 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         ButterKnife.bind(this, view);
-        if (getArguments() != null) {
-            note = presenter.getNoteByKey((long) getArguments().get("key"));
-        } else {
-            note = new Note();
-        }
-
         presenter.updateState(note);
-        titleEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                presenter.updateNoteTitle(note, charSequence);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        contentEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                presenter.updateNoteContent(note, charSequence);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
     }
 
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        note.setTitle(String.valueOf(titleEditText.getText()));
+        note.setContent(String.valueOf(contentEditText.getText()));
         if (note.getId() == 0) {
             presenter.createNote(note);
         } else {
             presenter.updateNote(note);
         }
+        super.onDestroy();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.note_menu, menu);
     }
 
@@ -156,7 +123,7 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
     @Override
     public void checkView(Note note) {
         titleEditText.setText(note.getTitle());
-        contentEditText.setText(note.getTitle());
+        contentEditText.setText(note.getContent());
     }
 
     @Override

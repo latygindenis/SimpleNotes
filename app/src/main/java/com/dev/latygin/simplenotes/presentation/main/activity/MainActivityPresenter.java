@@ -37,4 +37,5 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
         getViewState().checkDrawerItem(menuItem);
     }
 
+
 }

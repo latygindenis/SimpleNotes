@@ -15,9 +15,9 @@ public class ListOfNotesPresenter extends MvpPresenter<ListOfNotesView> {
 
     public boolean needUpdate = true;
     ArrayList<Boolean> isSelectedList;
+    int amountOfSeletcted;
 
     public void setNotesForRecycler() {
-        if (needUpdate) {
             NoteDatabase database = App.getInstance().getNoteDatabase();
             ArrayList<Note> notesForRecycler = (ArrayList<Note>) database.noteDao().getListOfNotes();
             isSelectedList = new ArrayList<>();
@@ -27,8 +27,19 @@ public class ListOfNotesPresenter extends MvpPresenter<ListOfNotesView> {
             Log.i("database", "yep");
             getViewState().initAdapter(notesForRecycler);
             needUpdate = false;
-        }
+    }
 
+    public void deleteSelectedNotes() {
+
+        NoteDatabase database = App.getInstance().getNoteDatabase();
+        ArrayList<Note> notesForRecycler = (ArrayList<Note>) database.noteDao().getListOfNotes();
+        for (int i = 0; i < isSelectedList.size(); i++) {
+            if (isSelectedList.get(i)) {
+                database.noteDao().deleteNote(notesForRecycler.get(i));
+                amountOfSeletcted--;
+            }
+        }
+        setNotesForRecycler();
     }
 
 

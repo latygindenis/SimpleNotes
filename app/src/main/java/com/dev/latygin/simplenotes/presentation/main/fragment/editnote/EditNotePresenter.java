@@ -9,17 +9,12 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.data.room.Note;
 
+import java.util.ArrayList;
+
 
 @InjectViewState
 public class EditNotePresenter extends MvpPresenter<EditNoteView> {
 
-    public void updateNoteTitle(Note note, CharSequence charSequence) {
-        note.setTitle(String.valueOf(charSequence));
-    }
-
-    public void updateNoteContent(Note note, CharSequence charSequence) {
-        note.setContent(String.valueOf(charSequence));
-    }
 
     public void updateNote(Note note) {
         App.getInstance().getNoteDatabase().noteDao().updateNote(note);
@@ -27,7 +22,8 @@ public class EditNotePresenter extends MvpPresenter<EditNoteView> {
 
     public void createNote(Note note) {
         App.getInstance().getNoteDatabase().noteDao().createNote(note);
-
+        ArrayList<Note> notes = (ArrayList<Note>) App.getInstance().getNoteDatabase().noteDao().getListOfNotes();
+        note.setId(notes.get(notes.size() - 1).getId());
     }
 
     public Note getNoteByKey(long key) {

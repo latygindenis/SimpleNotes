@@ -2,6 +2,7 @@ package com.dev.latygin.simplenotes.presentation.main.utils;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
 import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesFragment;
@@ -37,9 +38,12 @@ public class Navigator extends SupportFragmentNavigator {
 
     @Override
     protected void showSystemMessage(String message) {
+
     }
 
     @Override
     protected void exit() {
+        Log.i("exit", "yep");
     }
+
 }

@@ -24,6 +24,7 @@ import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
 import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesFragment;
+import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesPresenter;
 import com.dev.latygin.simplenotes.presentation.main.utils.Navigator;
 import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
 
@@ -54,18 +55,16 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
 
     private Navigator navigator = new Navigator(getSupportFragmentManager(), R.id.main_container);
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setTitle("Заметки");
         presenter.setupDrawerContent(navigationView);
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
-
     }
 
 
@@ -108,6 +107,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
     @Override
     protected void onResume() {
         super.onResume();
+
         App.getInstance().getNavigatorHolder().setNavigator(navigator);
     }
 
@@ -116,6 +116,16 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
         App.getInstance().getNavigatorHolder().removeNavigator();
         super.onPause();
     }
+//
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        if (getSupportFragmentManager().getBackStackEntryCount() == 0){
+//            finish();
+//            System.exit(0);
+//        }
+//
+//    }
 }
 
 

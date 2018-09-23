@@ -50,4 +50,5 @@ public class App extends Application {
     public NoteDatabase getNoteDatabase() {
         return noteDatabase;
     }
+
 }

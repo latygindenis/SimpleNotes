@@ -3,6 +3,7 @@ package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.recyc
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +17,31 @@ import java.util.ArrayList;
 public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHolder> {
 
 
-    private ArrayList<Boolean> selected;
     private ArrayList<Note> notes;
-
+    ArrayList<Boolean> isSelectedList;
     public interface ClickCallback {
         void click(int position);
     }
 
-    ClickCallback clickCallback;
+    public interface LongClickCallback {
+        boolean longClick(CardView cardView, int position);
+    }
 
-    public void registerRecyclerCalback(ClickCallback clickCallback) {
+    ClickCallback clickCallback;
+    LongClickCallback longClickCallback;
+
+    public void registerRecyclerClickCalback(ClickCallback clickCallback) {
         this.clickCallback = clickCallback;
     }
 
-    public ListOfNotesAdapter(ArrayList<Note> notes, FragmentActivity fragmentActivity, ArrayList<Boolean> selected) {
+    public void registerRecyclerLongClickCalback(LongClickCallback longClickCallback) {
+        this.longClickCallback = longClickCallback;
+    }
+
+
+    public ListOfNotesAdapter(ArrayList<Note> notes, FragmentActivity fragmentActivity, ArrayList<Boolean> isSelectedList) {
         this.notes = notes;
-        this.selected = selected;
+        this.isSelectedList = isSelectedList;
     }
 
     @NonNull
@@ -48,24 +58,14 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
         holder.titleNote.setText(note.getTitle());
         holder.contentNote.setText(note.getContent());
 
-        holder.cardNote.setOnClickListener(view -> clickCallback.click(position));
-        if (selected.get(position)) {
+        if (isSelectedList.get(position)) {
             holder.cardNote.setCardBackgroundColor(Color.LTGRAY);
         } else {
             holder.cardNote.setCardBackgroundColor(Color.TRANSPARENT);
         }
 
-        holder.cardNote.setOnLongClickListener(v -> {
-            if (!selected.get(position)) {
-                holder.cardNote.setCardBackgroundColor(Color.LTGRAY);
-                selected.set(position, true);
-                return true;
-            } else {
-                holder.cardNote.setCardBackgroundColor(Color.TRANSPARENT);
-                selected.set(position, false);
-                return true;
-            }
-        });
+        holder.cardNote.setOnClickListener(view -> clickCallback.click(position));
+        holder.cardNote.setOnLongClickListener(v -> longClickCallback.longClick(holder.cardNote, position));
     }
 
     @Override
