@@ -61,18 +61,22 @@ public class EditNoteFragment extends MvpAppCompatFragment implements EditNoteVi
         return new EditNoteFragment();
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (savedInstanceState != null) {
-            note = presenter.getNoteByKey(savedInstanceState.getLong("key"));
+        if (getArguments() != null) {
+            note = presenter.getNoteByKey(getArguments().getLong("key"));
         } else {
             note = new Note();
             presenter.createNote(note);
         }
-
     }
 
 

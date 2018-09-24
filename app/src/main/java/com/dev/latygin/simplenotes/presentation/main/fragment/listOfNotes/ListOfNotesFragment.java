@@ -29,6 +29,7 @@ import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.recycl
 import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +37,9 @@ import butterknife.ButterKnife;
 public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfNotesView {
 
     final int MENU_ID = 1;
+
+    int amountOfSelected;
+    boolean[] isSelectedList;
 
     @InjectPresenter
     ListOfNotesPresenter presenter;
@@ -70,17 +74,23 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
         ButterKnife.bind(this, view);
         fab.setOnClickListener(v -> {
             App.getInstance().getRouter().navigateTo(Screens.DETAIL_OF_NOTE.name());
-            presenter.needUpdate = true;
+            amountOfSelected = 0;
         });
-
         RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2, 1);
         recyclerView.setLayoutManager(layoutManager);
 
     }
 
+
     @Override
     public void initAdapter(ArrayList<Note> notes) {
-        recyclerView.setAdapter(new ListOfNotesAdapter(notes, getActivity(), presenter.isSelectedList));
+        if (isSelectedList == null || isSelectedList.length < notes.size()) {
+            isSelectedList = new boolean[notes.size()];
+            for (int i = 0; i < isSelectedList.length; i++) {
+                isSelectedList[i] = false;
+            }
+        }
+        recyclerView.setAdapter(new ListOfNotesAdapter(notes, getActivity(), isSelectedList));
         ListOfNotesAdapter listOfNotesAdapter = (ListOfNotesAdapter) recyclerView.getAdapter();
 
         listOfNotesAdapter.registerRecyclerClickCalback(position -> {
@@ -90,19 +100,18 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
 
 
         listOfNotesAdapter.registerRecyclerLongClickCalback((cardView, position) -> {
-            if (!presenter.isSelectedList.get(position)) {
-                presenter.isSelectedList.set(position, true);
+
+            if (!isSelectedList[position]) {
+                isSelectedList[position] = true;
                 cardView.setCardBackgroundColor(Color.LTGRAY);
-                presenter.amountOfSeletcted++;
                 getActivity().invalidateOptionsMenu();
+                amountOfSelected++;
                 return true;
             } else {
-                presenter.isSelectedList.set(position, false);
+                isSelectedList[position] = false;
                 cardView.setCardBackgroundColor(Color.TRANSPARENT);
-                presenter.amountOfSeletcted--;
-                if (presenter.amountOfSeletcted == 0) {
-                    getActivity().invalidateOptionsMenu();
-                }
+                getActivity().invalidateOptionsMenu();
+                amountOfSelected--;
                 return true;
             }
         });
@@ -118,20 +127,27 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        if (savedInstanceState != null) {
+            isSelectedList = savedInstanceState.getBooleanArray("selectedNotes");
+            amountOfSelected = savedInstanceState.getInt("amountOfSelected");
+            Log.i("test", "onCreate: " + isSelectedList.length);
+        } else {
+            amountOfSelected = 0;
+        }
         presenter.setNotesForRecycler();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.recycler_menu, menu);
-        menu.setGroupVisible(R.id.groupVsbl, presenter.amountOfSeletcted > 0);
-        if (presenter.amountOfSeletcted > 0) {
+        menu.setGroupVisible(R.id.groupVsbl, amountOfSelected > 0);
+        if (amountOfSelected > 0) {
             menu.add(0, MENU_ID, 0, "Удалить")
                     .setIcon(android.R.drawable.ic_delete)
                     .setShowAsAction(
                             MenuItem.SHOW_AS_ACTION_ALWAYS
                                     | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Выделено: " + presenter.amountOfSeletcted);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Выделено: " + amountOfSelected);
         } else {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Заметки");
             menu.removeItem(MENU_ID);
@@ -144,14 +160,15 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
             case MENU_ID:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Подтвердите действие")
-                        .setMessage("Уверены, что хотите удалить " + presenter.amountOfSeletcted + " заметок?")
+                        .setMessage("Уверены, что хотите удалить " + amountOfSelected + " заметки?")
                         .setCancelable(false)
                         .setNegativeButton("Нет",
                                 (dialog, which) -> {
 
                                 })
                         .setPositiveButton("Да", (dialog, which) -> {
-                            presenter.deleteSelectedNotes();
+                            presenter.deleteSelectedNotes(isSelectedList);
+                            App.getInstance().getRouter().newRootScreen(Screens.LIST_OF_NOTES.name());
                             getActivity().invalidateOptionsMenu();
                         });
                 AlertDialog alert = builder.create();
@@ -159,5 +176,12 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
         }
         Log.i("item", String.valueOf(item.getItemId()));
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBooleanArray("selectedNotes", isSelectedList);
+        outState.putInt("amountOfSelected", amountOfSelected);
     }
 }
