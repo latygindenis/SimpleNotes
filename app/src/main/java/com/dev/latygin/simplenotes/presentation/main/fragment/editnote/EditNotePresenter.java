@@ -1,40 +1,50 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.editnote;
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.data.room.Note;
+import com.dev.latygin.simplenotes.domain.RoomService;
+
 
 
 @InjectViewState
 public class EditNotePresenter extends MvpPresenter<EditNoteView> {
 
-    public void updateNoteTitle(Note note, CharSequence charSequence) {
-        note.setTitle(String.valueOf(charSequence));
+    boolean noteIsCreate = false;
+    private Note curNote;
+
+    void createNote() {
+        RoomService.getInstance().createNote(key -> {
+            curNote = new Note();
+            curNote.setId(key);
+            noteIsCreate = true;
+        });
     }
 
-    public void updateNoteContent(Note note, CharSequence charSequence) {
-        note.setContent(String.valueOf(charSequence));
+    void getNoteByKey(long key) {
+        RoomService.getInstance().getNoteById(key, new RoomService.GetNoteByIdCallback() {
+            @Override
+            public void onSuccess(Note note) {
+                curNote = note;
+                noteIsCreate = true;
+                updateState(curNote);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+        });
     }
 
-    public void updateNote(Note note) {
-        App.getInstance().getNoteDatabase().noteDao().updateNote(note);
+    void updateNote(String title, String content) {
+        curNote.setTitle(title);
+        curNote.setContent(content);
+        RoomService.getInstance().updateNote(curNote);
     }
 
-    public void createNote(Note note) {
-        App.getInstance().getNoteDatabase().noteDao().createNote(note);
-
-    }
-
-    public Note getNoteByKey(long key) {
-        return App.getInstance().getNoteDatabase().noteDao().getNoteById(key);
-    }
-
-    public void updateState(Note note) {
+    private void updateState(Note note) {
         getViewState().checkView(note);
     }
 }

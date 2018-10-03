@@ -1,9 +1,5 @@
 package com.dev.latygin.simplenotes.presentation.main.activity;
 
-import android.app.FragmentManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.support.v4.app.Fragment;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,21 +7,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
-import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
-import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesFragment;
 import com.dev.latygin.simplenotes.presentation.main.utils.Navigator;
-import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,18 +45,16 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
 
     private Navigator navigator = new Navigator(getSupportFragmentManager(), R.id.main_container);
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Заметки");
         presenter.setupDrawerContent(navigationView);
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
-
     }
 
 
