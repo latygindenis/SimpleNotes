@@ -23,9 +23,7 @@ public class App extends Application {
         super.onCreate();
         instance = this;
         noteDatabase = Room.databaseBuilder(this,
-                NoteDatabase.class, "database")
-                .allowMainThreadQueries()
-                .build();
+                NoteDatabase.class, "database").build();
         initCicerone();
         getRouter().newRootScreen(Screens.LIST_OF_NOTES.name());
 

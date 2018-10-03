@@ -1,36 +1,50 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.editnote;
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.data.room.Note;
+import com.dev.latygin.simplenotes.domain.RoomService;
 
-import java.util.ArrayList;
 
 
 @InjectViewState
 public class EditNotePresenter extends MvpPresenter<EditNoteView> {
 
+    boolean noteIsCreate = false;
+    private Note curNote;
 
-    public void updateNote(Note note) {
-        App.getInstance().getNoteDatabase().noteDao().updateNote(note);
+    void createNote() {
+        RoomService.getInstance().createNote(key -> {
+            curNote = new Note();
+            curNote.setId(key);
+            noteIsCreate = true;
+        });
     }
 
-    public void createNote(Note note) {
-        App.getInstance().getNoteDatabase().noteDao().createNote(note);
-        ArrayList<Note> notes = (ArrayList<Note>) App.getInstance().getNoteDatabase().noteDao().getListOfNotes();
-        note.setId(notes.get(notes.size() - 1).getId());
+    void getNoteByKey(long key) {
+        RoomService.getInstance().getNoteById(key, new RoomService.GetNoteByIdCallback() {
+            @Override
+            public void onSuccess(Note note) {
+                curNote = note;
+                noteIsCreate = true;
+                updateState(curNote);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+        });
     }
 
-    public Note getNoteByKey(long key) {
-        return App.getInstance().getNoteDatabase().noteDao().getNoteById(key);
+    void updateNote(String title, String content) {
+        curNote.setTitle(title);
+        curNote.setContent(content);
+        RoomService.getInstance().updateNote(curNote);
     }
 
-    public void updateState(Note note) {
+    private void updateState(Note note) {
         getViewState().checkView(note);
     }
 }

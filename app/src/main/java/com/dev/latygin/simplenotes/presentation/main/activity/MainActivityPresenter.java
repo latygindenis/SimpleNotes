@@ -7,14 +7,12 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
-import com.dev.latygin.simplenotes.presentation.main.fragment.editnote.EditNoteFragment;
-import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.ListOfNotesFragment;
 import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
 
 @InjectViewState
 public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
-    
-    public void setupDrawerContent(NavigationView navigationView){
+
+    void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
                     selectDrawerItem(menuItem);
@@ -36,6 +34,4 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
         menuItem.setChecked(true);
         getViewState().checkDrawerItem(menuItem);
     }
-
-
 }

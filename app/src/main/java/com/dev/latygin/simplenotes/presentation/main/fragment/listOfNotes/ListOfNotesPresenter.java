@@ -1,37 +1,63 @@
 package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes;
 
-import android.util.Log;
+import android.support.v7.widget.CardView;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.data.room.Note;
-import com.dev.latygin.simplenotes.data.room.NoteDatabase;
+import com.dev.latygin.simplenotes.domain.RoomService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @InjectViewState
 public class ListOfNotesPresenter extends MvpPresenter<ListOfNotesView> {
 
+    private List<Long> idNotesForDelete = new ArrayList<>();
 
-    public void setNotesForRecycler() {
-            NoteDatabase database = App.getInstance().getNoteDatabase();
-            ArrayList<Note> notesForRecycler = (ArrayList<Note>) database.noteDao().getListOfNotes();
-            Log.i("database", "yep");
-            getViewState().initAdapter(notesForRecycler);
+    void setNotesForRecycler() {
+        RoomService.getInstance().getListOfNotes(notes -> getViewState().initAdapter((ArrayList<Note>) notes));
     }
 
-    public void deleteSelectedNotes(boolean[] isSelectedList) {
+    void deleteSelectedNotes() {
+        RoomService.getInstance().deleteListOfNotes(idNotesForDelete);
+        idNotesForDelete = new ArrayList<>();
+    }
 
-        NoteDatabase database = App.getInstance().getNoteDatabase();
-        ArrayList<Note> notesForRecycler = (ArrayList<Note>) database.noteDao().getListOfNotes();
-
-        for (int i = 0; i < isSelectedList.length; i++) {
-            if (isSelectedList[i]) {
-                database.noteDao().deleteNote(notesForRecycler.get(i));
-            }
+    void updateSelectedState(CardView cardView, Note note) {
+        if (idNotesForDelete.contains(note.getId())) {
+            removeSelectedNote(note);
+            getViewState().checkSelectedNotes(cardView, false);
+        } else {
+            addSelectedNote(note);
+            getViewState().checkSelectedNotes(cardView, true);
         }
     }
+
+    List<Long> getListForDelete() {
+        return idNotesForDelete;
+    }
+
+    boolean isListOfSelectedNotesNotEmpty() {
+        return idNotesForDelete.size() != 0;
+    }
+
+    int getAmountOfSelected() {
+        return idNotesForDelete.size();
+    }
+
+
+    private void addSelectedNote(Note note) {
+        idNotesForDelete.add(note.getId());
+    }
+
+    private void removeSelectedNote(Note note) {
+        idNotesForDelete.remove(note.getId());
+    }
+
+
+
+
 
 
 }

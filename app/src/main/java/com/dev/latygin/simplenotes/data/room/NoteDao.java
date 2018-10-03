@@ -6,25 +6,30 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.dev.latygin.simplenotes.data.NoteRepository;
-
 import java.util.List;
+
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 @Dao
 public interface NoteDao {
 
     @Insert
-    void createNote(Note note);
+    long createNote(Note note);
 
     @Update
     void updateNote(Note note);
 
+    @Query("DELETE FROM note WHERE id = :id")
+    void deleteNote(long id);
+
     @Delete
-    void deleteNote(Note note);
+    void deleteListOfNote(List<Note> notes);
 
     @Query("SELECT * FROM note WHERE id = :id")
-    Note getNoteById(long id);
+    Single<Note> getNoteById(long id);
 
     @Query("SELECT * FROM note")
-    List<Note> getListOfNotes();
+    Flowable<List<Note>> getListOfNotes();
 }

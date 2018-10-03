@@ -2,10 +2,8 @@ package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.recyc
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +12,14 @@ import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.data.room.Note;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHolder> {
 
 
     private ArrayList<Note> notes;
-    private boolean[] isSelectedList;
+    private List<Long> isSelectedList;
+
     public interface ClickCallback {
         void click(int position);
     }
@@ -28,19 +28,19 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
         boolean longClick(CardView cardView, int position);
     }
 
-    ClickCallback clickCallback;
-    LongClickCallback longClickCallback;
+    private ClickCallback clickCallback;
+    private LongClickCallback longClickCallback;
 
-    public void registerRecyclerClickCalback(ClickCallback clickCallback) {
+    public void registerRecyclerClickCallback(ClickCallback clickCallback) {
         this.clickCallback = clickCallback;
     }
 
-    public void registerRecyclerLongClickCalback(LongClickCallback longClickCallback) {
+    public void registerRecyclerLongClickCallback(LongClickCallback longClickCallback) {
         this.longClickCallback = longClickCallback;
     }
 
 
-    public ListOfNotesAdapter(ArrayList<Note> notes, FragmentActivity fragmentActivity, boolean[] isSelectedList) {
+    public ListOfNotesAdapter(ArrayList<Note> notes, List<Long> isSelectedList) {
         this.notes = notes;
         this.isSelectedList = isSelectedList;
     }
@@ -50,7 +50,6 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
     public ListOfNotesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.note_card, parent, false);
-
         return new ListOfNotesViewHolder(v);
     }
 
@@ -59,7 +58,7 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
         Note note = notes.get(position);
         holder.titleNote.setText(note.getTitle());
         holder.contentNote.setText(note.getContent());
-        if (isSelectedList.length > 0 && isSelectedList[position]) {
+        if (isSelectedList.contains(note.getId())) {
             holder.cardNote.setCardBackgroundColor(Color.LTGRAY);
         } else {
             holder.cardNote.setCardBackgroundColor(Color.TRANSPARENT);
@@ -73,6 +72,4 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
     public int getItemCount() {
         return notes.size();
     }
-
-
 }
