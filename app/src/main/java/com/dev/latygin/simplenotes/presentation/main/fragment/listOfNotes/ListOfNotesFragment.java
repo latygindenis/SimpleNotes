@@ -2,15 +2,18 @@ package com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,8 +29,10 @@ import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.data.room.Note;
 import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.recycler.ListOfNotesAdapter;
+import com.dev.latygin.simplenotes.presentation.main.fragment.listOfNotes.util.NotesDiffUtilCallback;
 import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -53,6 +58,8 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
     RecyclerView recyclerView;
 
 
+    ListOfNotesAdapter listOfNotesAdapter;
+
 
     public static ListOfNotesFragment newInstance() {
         return new ListOfNotesFragment();
@@ -62,6 +69,7 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+
         return inflater.inflate(R.layout.list_of_notes, container, false);
     }
 
@@ -70,26 +78,29 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         fab.setOnClickListener(v -> App.getInstance().getRouter().navigateTo(Screens.DETAIL_OF_NOTE.name()));
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, 1));
+        presenter.setNotesForRecycler();
     }
 
 
     @Override
     public void initAdapter(ArrayList<Note> notes) {
-        recyclerView.setAdapter(new ListOfNotesAdapter(notes, presenter.getListForDelete()));
-        ListOfNotesAdapter listOfNotesAdapter = (ListOfNotesAdapter) recyclerView.getAdapter();
 
-        listOfNotesAdapter.registerRecyclerClickCallback(position -> {
-            Note note = notes.get(position);
-            App.getInstance().getRouter().navigateTo(Screens.DETAIL_OF_NOTE.name(), note.getId());
-        });
+        if (recyclerView.getAdapter() == null) {
+            listOfNotesAdapter = new ListOfNotesAdapter(notes, presenter.getListForDelete());
+            recyclerView.setAdapter(listOfNotesAdapter);
+        } else {
+            NotesDiffUtilCallback notesDiffUtilCallback =
+                    new NotesDiffUtilCallback(listOfNotesAdapter.getNotes(), notes);
+            DiffUtil.DiffResult noteDiffResult = DiffUtil.calculateDiff(notesDiffUtilCallback, true);
+            listOfNotesAdapter.setNotes(notes);
+            noteDiffResult.dispatchUpdatesTo(listOfNotesAdapter);
 
-
-        listOfNotesAdapter.registerRecyclerLongClickCallback((cardView, position) -> {
-            presenter.updateSelectedState(cardView, notes.get(position));
-            return true;
-        });
+            listOfNotesAdapter.registerRecyclerLongClickCallback((cardView, note) -> {
+                presenter.updateSelectedState(cardView, note);
+                return true;
+            });
+        }
     }
 
     @Override
@@ -108,7 +119,7 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        presenter.setNotesForRecycler();
+
     }
 
     @Override
@@ -157,7 +168,6 @@ public class ListOfNotesFragment extends MvpAppCompatFragment implements ListOfN
                                 })
                         .setPositiveButton("Да", (dialog, which) -> {
                             presenter.deleteSelectedNotes();
-                            App.getInstance().getRouter().newRootScreen(Screens.LIST_OF_NOTES.name());
                             getActivity().invalidateOptionsMenu();
                         });
                 AlertDialog alert = builder.create();

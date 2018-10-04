@@ -39,6 +39,12 @@ public class EditNotePresenter extends MvpPresenter<EditNoteView> {
     }
 
     void updateNote(String title, String content) {
+        if (title == null) {
+            title = "";
+        }
+        if (content == null) {
+            content = "";
+        }
         curNote.setTitle(title);
         curNote.setContent(content);
         RoomService.getInstance().updateNote(curNote);

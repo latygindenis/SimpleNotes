@@ -8,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dev.latygin.simplenotes.App;
 import com.dev.latygin.simplenotes.R;
 import com.dev.latygin.simplenotes.data.room.Note;
+import com.dev.latygin.simplenotes.presentation.main.utils.Screens;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +22,21 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
     private ArrayList<Note> notes;
     private List<Long> isSelectedList;
 
+    public ArrayList<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(ArrayList<Note> notes) {
+
+        this.notes = notes;
+    }
+
     public interface ClickCallback {
         void click(int position);
     }
 
     public interface LongClickCallback {
-        boolean longClick(CardView cardView, int position);
+        boolean longClick(CardView cardView, Note note);
     }
 
     private ClickCallback clickCallback;
@@ -39,6 +50,9 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
         this.longClickCallback = longClickCallback;
     }
 
+    public void setIsSelectedList(List<Long> isSelectedList) {
+        this.isSelectedList = isSelectedList;
+    }
 
     public ListOfNotesAdapter(ArrayList<Note> notes, List<Long> isSelectedList) {
         this.notes = notes;
@@ -64,8 +78,8 @@ public class ListOfNotesAdapter extends RecyclerView.Adapter<ListOfNotesViewHold
             holder.cardNote.setCardBackgroundColor(Color.TRANSPARENT);
         }
 
-        holder.cardNote.setOnClickListener(view -> clickCallback.click(position));
-        holder.cardNote.setOnLongClickListener(v -> longClickCallback.longClick(holder.cardNote, position));
+        holder.cardNote.setOnClickListener(view -> App.getInstance().getRouter().navigateTo(Screens.DETAIL_OF_NOTE.name(), note.getId()));
+        holder.cardNote.setOnLongClickListener(v -> longClickCallback.longClick(holder.cardNote, note));
     }
 
     @Override

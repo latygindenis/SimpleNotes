@@ -11,9 +11,9 @@ public class Note {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    private String title;
+    private String title = "";
 
-    private String content;
+    private String content = "";
 
     public void setTitle(String title) {
         this.title = title;
